@@ -23,8 +23,8 @@ def save_checkpoint(state, filename="my_saved_checkpoint.pth.tar"):
 
 def load_checkpoint(checkpoint, model, optimizer):
     print("Loading checkpoint")
-    model.load_state_dict(checkpoint('state_dict'))
-    optimizer.load_state_dict(checkpoint('optimizer'))
+    model.load_state_dict(checkpoint['state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer'])
 
 
 # ================================================================================
@@ -42,12 +42,13 @@ def main():
     input_size = n_characters
     sequence_length = 784
     num_layers = 2
+    embed_dim = 5
     hidden_size = 256
     num_classes = 10
     learning_rate = 0.001
     batch_size = 64
     num_epochs = 10
-    load_model = False
+    load_model = True
 
     # --------------------------------------------------------------------------------
     # --------------------------------------------------------------------------------
@@ -66,7 +67,8 @@ def main():
     # --------------------------------------------------------------------------------
 
     # Initialize Network
-    model = BiRNN(input_size, hidden_size, num_layers, num_classes).to(device)
+    model = BiRNN(input_size=input_size, embed_dim=embed_dim, hidden_size=hidden_size, num_layers=num_layers,
+                  output_size=num_classes).to(device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     criterion = nn.CrossEntropyLoss()
@@ -76,7 +78,7 @@ def main():
 
     # Loading my saved checkedpoint
     if load_model:
-        load_checkpoint(torch.load("my_saved_checkpoint.pth.tar"), model, optimizer)
+        load_checkpoint((torch.load("my_saved_checkpoint.pth.tar")), model, optimizer)
 
     # --------------------------------------------------------------------------------
 
@@ -94,7 +96,7 @@ def main():
             data = data.to(device=device)  # Remove the one for a particular axis
             targets = targets.to(device=device)
 
-            data = data.reshape(data.shape[0], -1)
+            #data = data.reshape(data.shape[0], -1)
 
             # forward
             scores = model(data)
@@ -105,7 +107,6 @@ def main():
             # backward
             optimizer.zero_grad()
             loss.backward()
-
 
             # gradiant descent or adam step
             optimizer.step()
@@ -127,7 +128,7 @@ def main():
             for x, y in loader:
                 x = x.to(device=device)
                 y = y.to(device=device)
-                x = x.reshape(x.shape[0], -1)
+                #x = x.reshape(x.shape[0], -1)
                 scores = model(x)
                 _, predictions = scores.max(1)
                 num_correct += (predictions == y).sum()
