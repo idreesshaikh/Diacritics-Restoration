@@ -1,0 +1,136 @@
+import glob
+import torch
+import torch.nn as nn
+import string
+from torch.utils.tensorboard import SummaryWriter  # print to tensorboard
+from tqdm import tqdm
+from BiRNN import BiRNN
+from getDataSet import getDataSet
+
+# -------------------------------------------------------------------------------
+
+# Deice Configuration
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+# --------------------------------------------------------------------------------
+
+# -------------------------Hyperparameters----------------------------------------
+
+input_size = 784
+sequence_length = 784
+num_layers = 2
+hidden_size = 256
+num_classes = 10
+learning_rate = 0.001
+batch_size = 64
+num_epochs = 10
+load_model = False
+
+# --------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
+
+# Initialize Network
+model = BiRNN(input_size, hidden_size, num_layers, num_classes).to(device)
+
+optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+criterion = nn.CrossEntropyLoss()
+writer = SummaryWriter(f'runs/lines0')  # for tensorboard
+
+
+# ------------------------------------------------------------------------
+# ----------------------------CHECKPOINT----------------------------------
+
+def save_checkpoint(state, filename="my_saved_checkpoint.pth.tar"):
+    print("Saving your checkpoint ehh: you so lazy")
+    torch.save(state, filename)
+
+
+def load_checkpoint(checkpoint):
+    print("Loading checkpoint")
+    model.load_state_dict(checkpoint('state_dict'))
+    optimizer.load_state_dict(checkpoint('optimizer'))
+
+
+# ================================================================================
+
+def findFiles(path): return glob.glob(path)
+
+
+# ================================================================================
+
+
+# --------------------------------------------------------------------------------
+def main():
+    all_characters = string.printable + ' áéíóöőúüűÁÉÍÓÖŐÚÜŰ'
+    n_characters = len(all_characters)
+    filename = findFiles('diacritic_data/train')
+
+    train_data = getDataSet()
+    train_data.__int__(filename, all_characters)
+    train_loader = train_data.read()
+    # --------------------------------------------------------------------------------
+
+    # Loading my saved checkedpoint
+    if load_model:
+        load_checkpoint(torch.load("my_saved_checkpoint.pth.tar"))
+
+    # --------------------------------------------------------------------------------
+
+    # Training Network
+    print("Start training")
+    for epoch in range(num_epochs):
+        losses = []
+
+        if epoch % 2 == 0:
+            checkpoint = {'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict()}
+            save_checkpoint(checkpoint)
+        loop = tqdm(enumerate(train_loader), total=len(train_loader), leave=False)
+        for batch_idx, (data, targets) in loop:
+            # Get data to cuda if possible
+            data = data.to(device=device) # Remove the one for a particular axis
+            targets = targets.to(device=device)
+
+            data = data.reshape(data.shape[0],-1)
+            # forward
+            scores = model(data)
+            loss = criterion(scores, targets)
+
+            losses.append(loss.item())
+
+            # backward
+            optimizer.zero_grad()
+            loss.backward()
+
+            # gradiant descent or adam step
+            optimizer.step()
+
+            # update progress bar
+            loop.set_description(f"Epoch [{epoch}/{num_epochs}]")
+            loop.set_postfix(loss=loss.item(), acc=torch.rand(1).item())
+
+    # --------------------------------------------------------------------------------
+
+    # Check Accuracy
+    def check_accuracy(loader, model):
+        num_correct = 0
+        num_samples = 0
+        model.eval()
+
+        with torch.no_grad():
+            # matches, total = 0, 0
+            for x, y in train_loader:
+                x = x.to(device=device)
+                y = y.to(device=device)
+                x = x.reshape(x.shape[0], -1)
+                scores = model(x)
+                _, predictions = scores.max(1)
+                num_correct += (predictions == y).sum()
+                num_samples += predictions.size(0)
+                # batch_out = batch_out.squeeze(1)
+                # Calculate accuracy
+            print(f' Got  {num_correct} /')
+            print('Accuracy: {float(num_correct)/float(num_samples)*100}')
+
+
+if __name__ == '__main__':
+    main()
