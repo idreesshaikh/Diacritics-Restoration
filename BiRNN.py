@@ -14,7 +14,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 class BiRNN(nn.Module):
     # initializing RNN
-    def __init__(self, input_size, hidden_size, num_layers, num_classes):
+    def __init__(self, input_size, hidden_size, num_layers, output_size):
         super(BiRNN, self).__init__()
         self.hidden_size = hidden_size
         self.num_layers = num_layers
@@ -23,7 +23,7 @@ class BiRNN(nn.Module):
         self.embed = nn.Embedding(input_size, hidden_size)
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True,
                             bidirectional=True)
-        self.fully_connected = nn.Linear(hidden_size * 2, num_classes)
+        self.fully_connected = nn.Linear(hidden_size * 2, output_size)
 
     def forward(self, x, hidden, cell):
         # We have 2 layers one going forward and one going backwards and they will be concatenated to get the hidden

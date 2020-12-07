@@ -14,8 +14,7 @@ class getDataSet:
         for x in self.all_characters:
             alphabet[x] = self.all_characters.index(x)
         dataset = []
-        lines = open('diacritic_data/train', encoding='utf-8').read().strip().split('\n')
-
+        lines = open(self.filename, encoding='utf-8').read().strip().split('\n')
         for l in lines:
             non_diacritized, diacritized = l.split('\t')
             non_diacritized = [alphabet.get(x, alphabet['*']) for x in non_diacritized]
