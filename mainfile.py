@@ -34,26 +34,24 @@ def load_checkpoint(checkpoint, model, optimizer):
 
 # --------------------------------------------------------------------------------
 def main():
-    all_characters = string.printable + ' áéíóöőúüűÁÉÍÓÖŐÚÜŰ'
+    all_characters = string.printable + 'áéíóöőúüűÁÉÍÓÖŐÚÜŰ'
     n_characters = len(all_characters)
 
     # -------------------------Hyperparameters----------------------------------------
 
     input_size = n_characters
-    sequence_length = 784
     num_layers = 2
-    embed_dim = 5
-    hidden_size = 256
-    num_classes = 10
+    embed_dim = 10
+    hidden_size = 10
     learning_rate = 0.001
-    batch_size = 64
-    num_epochs = 10
+    num_epochs = 2
     load_model = True
 
     # --------------------------------------------------------------------------------
     # --------------------------------------------------------------------------------
 
     # GETTING THE DATA from DATASET
+
     train_data = getDataSet()
     train_data.__int__('diacritic_data/train', all_characters)
     train_loader = train_data.read()
@@ -63,16 +61,15 @@ def main():
     test_data = getDataSet()
     test_data.__int__('diacritic_data/test', all_characters)
     test_loader = test_data.read()
-
+    #            'Diacritics': [line for line in with_diacritics[1:1000]]}
     # --------------------------------------------------------------------------------
 
     # Initialize Network
-    model = BiRNN(input_size=input_size, embed_dim=embed_dim, hidden_size=hidden_size, num_layers=num_layers,
-                  output_size=num_classes).to(device)
+    model = BiRNN(input_size=input_size, embed_dim=embed_dim, hidden_size=hidden_size, num_layers=num_layers).to(device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     criterion = nn.CrossEntropyLoss()
-    writer = SummaryWriter(f'runs/lines0')  # for tensorboard
+    Writer = SummaryWriter(f'runs/lines0')  # for tensorboard
 
     # --------------------------------------------------------------------------------
 
@@ -96,7 +93,7 @@ def main():
             data = data.to(device=device)  # Remove the one for a particular axis
             targets = targets.to(device=device)
 
-            #data = data.reshape(data.shape[0], -1)
+            #data = data.reshape(data.shape[0], )
 
             # forward
             scores = model(data)
@@ -110,6 +107,8 @@ def main():
 
             # gradiant descent or adam step
             optimizer.step()
+
+            Writer.add_scalar('Training Loss', loss, global_step=epoch)
 
             # update progress bar
             loop.set_description(f"Epoch [{epoch}/{num_epochs}]")
@@ -134,8 +133,8 @@ def main():
                 num_correct += (predictions == y).sum()
                 num_samples += predictions.size(0)
                 # Calculate accuracy
-            accuracy = float(num_correct) / float(num_samples) * 100
-            print(f'Got {num_correct} / {num_samples} with accuracy {accuracy}:.2')
+            accuracy = (float(num_correct) / float(num_samples)) * 100
+            print(f'Got {num_correct} / {num_samples} with accuracy {accuracy:.2f}')
         model.train()
         return accuracy
 
