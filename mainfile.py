@@ -4,7 +4,7 @@ import string
 from torch.utils.tensorboard import SummaryWriter  # print to tensorboard
 from tqdm import tqdm
 from BiRNN import BiRNN
-from getDataSet import getDataSet
+from DataSet import DataSet
 
 # -------------------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ def main():
     embed_dim = 10
     hidden_size = 10
     learning_rate = 0.001
-    num_epochs = 2
+    num_epochs = 10
     load_model = True
 
     # --------------------------------------------------------------------------------
@@ -52,13 +52,13 @@ def main():
 
     # GETTING THE DATA from DATASET
 
-    train_data = getDataSet()
+    train_data = DataSet()
     train_data.__int__('diacritic_data/train', all_characters)
     train_loader = train_data.read()
-    valid_data = getDataSet()
+    valid_data = DataSet()
     valid_data.__int__('diacritic_data/dev', all_characters)
     valid_loader = valid_data.read()
-    test_data = getDataSet()
+    test_data = DataSet()
     test_data.__int__('diacritic_data/test', all_characters)
     test_loader = test_data.read()
     #            'Diacritics': [line for line in with_diacritics[1:1000]]}

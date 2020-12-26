@@ -4,7 +4,7 @@ import torch
 
 # Get characters all the possible characters
 
-class getDataSet:
+class DataSet:
     def __int__(self, filename, all_characters):
         self.filename = filename
         self.all_characters = all_characters
