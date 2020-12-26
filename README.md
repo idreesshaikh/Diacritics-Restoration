@@ -20,4 +20,4 @@ We make use of the preprocessed data of Hungarian Language into three train, dev
 </p>
 
 ### Sidenote:
-  **Load_Model variable in mainfile.py can be set to True to load the trained data, but keep it False if you're running the program for the first time. It's set to False by default.**
+  _load_model variable in mainfile.py can be set to True to load the trained data, but keep it False if you're running the program for the first time. It's set to False by default._
