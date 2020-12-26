@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import string
-from torch.utils.tensorboard import SummaryWriter  # print to tensorboard
 from tqdm import tqdm
 from BiRNN import BiRNN
 from DataSet import DataSet
@@ -16,7 +15,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # ------------------------------------------------------------------------
 # ----------------------------CHECKPOINT----------------------------------
 
-def save_checkpoint(state, filename="my_saved_checkpoint.pth.tar"):
+def save_checkpoint(state, filename="saved_checkpoint.pth.tar"):
     print("Saving your checkpoint ehh: you so lazy")
     torch.save(state, filename)
 
@@ -45,7 +44,7 @@ def main():
     hidden_size = 10
     learning_rate = 0.001
     num_epochs = 10
-    load_model = True
+    load_model = False
 
     # --------------------------------------------------------------------------------
     # --------------------------------------------------------------------------------
@@ -55,9 +54,9 @@ def main():
     train_data = DataSet()
     train_data.__int__('diacritic_data/train', all_characters)
     train_loader = train_data.read()
-    valid_data = DataSet()
-    valid_data.__int__('diacritic_data/dev', all_characters)
-    valid_loader = valid_data.read()
+    #valid_data = DataSet()
+    #valid_data.__int__('diacritic_data/dev', all_characters)
+    #valid_loader = valid_data.read()
     test_data = DataSet()
     test_data.__int__('diacritic_data/test', all_characters)
     test_loader = test_data.read()
@@ -69,13 +68,12 @@ def main():
 
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     criterion = nn.CrossEntropyLoss()
-    Writer = SummaryWriter(f'runs/lines0')  # for tensorboard
 
     # --------------------------------------------------------------------------------
 
     # Loading my saved checkedpoint
     if load_model:
-        load_checkpoint((torch.load("my_saved_checkpoint.pth.tar")), model, optimizer)
+        load_checkpoint((torch.load("saved_checkpoint.pth.tar")), model, optimizer)
 
     # --------------------------------------------------------------------------------
 
@@ -108,8 +106,6 @@ def main():
             # gradiant descent or adam step
             optimizer.step()
 
-            Writer.add_scalar('Training Loss', loss, global_step=epoch)
-
             # update progress bar
             loop.set_description(f"Epoch [{epoch}/{num_epochs}]")
             loop.set_postfix(loss=loss.item(), acc=torch.rand(1).item())
@@ -139,7 +135,7 @@ def main():
         return accuracy
 
     check_accuracy(train_loader, model)
-    check_accuracy(valid_loader, model)
+    #check_accuracy(valid_loader, model)
     check_accuracy(test_loader, model)
 
 
