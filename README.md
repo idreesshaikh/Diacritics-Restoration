@@ -15,9 +15,5 @@ We make use of the preprocessed data of Hungarian Language into three train, dev
 ### Prerequisite:    
   **Extract diacritic_data.rar to 'diacritic_data' folder which includes train and test files. The dataset is 'non diacritized data' and 'diacritized data' separated by tab. You can use your own data/language, but in my case I'm restoring diacritics in Hungarian language.**
 
-<p align="center" >
-  <img src="image/BiLSTM.png" />
-</p>
-
 ### Sidenote:
   _load_model variable in mainfile.py can be set to True to load the trained data, but keep it False if you're running the program for the first time. It's set to False by default._
