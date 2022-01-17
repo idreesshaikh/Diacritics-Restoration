@@ -1,4 +1,8 @@
-# Diacritics-Restoration
+<div align="center"> 
+  
+  # Diacritics-Restoration
+  
+</div>
 
 **A character-level recurrent neural-network based model applied to diacritics restoration.**
 
@@ -6,8 +10,7 @@
 
 ## About the Task
 
-  Almost half of the words in Hungarian language contain diacritics, so restoring diacritics became an important task in particulars with Hungarian language.
-We make use of the preprocessed data of the language into three train, dev, and test splits each one with and without their corresponding diacritics separated by a tab. This helps us read data eventually without the use of any other external library. In this very project we are trying to map our input sequence on the output sequence with a ‘character level embedding’ implementation. a Character-Word Long Short-Term Memory Language Model which both reduces the perplexity with respect to a baseline word-level language model and reduces the number of parameters of the model. Character information can reveal structural (dis)similarities between words and can even be used when a word is out-of-vocabulary, thus improving the modeling of infrequent and unknown words. We will use a parallel dataset of the following form where each tuple represents a pair of (non_diacritized, diacritized) input and output sequences.
+  Almost half of the words in Hungarian language contain diacritics, so restoring diacritics became an important task in particulars with Hungarian language. We make use of the preprocessed data of the language into three train, dev, and test splits each one with and without their corresponding diacritics separated by a tab. This helps us read data eventually without the use of any other external library. In this very project we are trying to map our input sequence on the output sequence with a ‘character level embedding’ implementation. A Character-Word Long Short-Term Memory language model which both reduces the perplexity with respect to a baseline word-level language model and also reduces the number of parameters of the model. Character information can reveal structural (dis)similarities between words and can even be used when a word is out-of-vocabulary, thus improving the modeling of infrequent and unknown words. We will use a parallel dataset of the following form where each tuple represents a pair of (non_diacritized, diacritized) input and output sequences.
 
   **(‘koszonom szepen’, ‘köszönöm szépen’)**
 
